@@ -4,32 +4,36 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 ## Requirements
 - [x] Titanium SDK 6.2.0 or later
 
+## ToDo's
+
+- [ ] Property format nested lists in this readme
+
 ## API's
 
 ### `FirebaseDatabase`
 
 #### Methods
 
-* `getReference(arguments)` -> `FirebaseDatabaseReference`
-    * `identifier` (String), `path` (String) **OR** `url` (String)
-    * `observableEvents` ([`DATA_EVENT_TYPE_*`])
+- `getReference(arguments)` -> `FirebaseDatabaseReference`
+  - `identifier` (String), `path` (String) **OR** `url` (String)
+  - `observableEvents` ([`DATA_EVENT_TYPE_*`])
 
 ### `FirebaseDatabaseReference`
 
 #### Methods
 
-* `child(arguments)` -> `FirebaseDatabaseReference`
-    * `identifier` (String), `path` (String) **OR** `url` (String)
-    * `observableEvents` ([`DATA_EVENT_TYPE_*`])
-
-* `root(arguments)` -> `FirebaseDatabaseReference`
-    * `observableEvents` ([`DATA_EVENT_TYPE_*`])
-  
-- `parent(arguments)` -> `FirebaseDatabaseReference`
+- `child(arguments)` -> `FirebaseDatabaseReference`
+  - `identifier` (String), `path` (String) **OR** `url` (String)
   - `observableEvents` ([`DATA_EVENT_TYPE_*`])
 
+- `root(arguments)` -> `FirebaseDatabaseReference`
+  - `observableEvents` ([`DATA_EVENT_TYPE_*`])
+  
+- `parent(arguments)` -> `FirebaseDatabaseReference`
+  - `observableEvents` ([`DATA_EVENT_TYPE_*`])
+
 - `setValue(value, callback)`
-  - `value` (Any)
+  - `value` (Any)
   - `callback` (optional, Function)
 
 - `removeValue(callback)`
