@@ -10,6 +10,8 @@
 
 @implementation FirebaseDatabaseReferenceProxy
 
+#pragma mark - Internal
+
 - (void)dealloc
 {
   [_reference removeAllObservers];
@@ -33,6 +35,10 @@
 
   return self;
 }
+
+#pragma mark - Public API's
+
+#pragma mark Methods
 
 - (FirebaseDatabaseReferenceProxy *)child:(id)arguments
 {
@@ -66,27 +72,127 @@
                                                      observableEvents:observableEvents];
 }
 
-- (void)setValue:(id)value
+- (void)setValue:(NSArray *)arguments
 {
-  value = [value objectAtIndex:0];
+  id value = [arguments objectAtIndex:0];
+
+  if ([arguments count] == 0) {
+    [_reference setValue:value];
+    return;
+  }
+
+  KrollCallback *callback = [arguments objectAtIndex:1];
+  __weak __typeof__(self) weakSelf = self;
+
+  [_reference setValue:value
+      withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull ref) {
+        __typeof__(self) strongSelf = weakSelf;
+        NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObjectsAndKeys:NUMBOOL(error == nil), @"success", nil];
+
+        [callback call:@[ event ] thisObject:strongSelf];
+      }];
+
   [_reference setValue:value];
 }
 
-- (void)removeValue:(id)unused
+- (void)removeValue:(NSArray *)arguments
 {
-  [_reference removeValue];
+  if ([arguments count] == 0) {
+    [_reference removeValue];
+    return;
+  }
+
+  KrollCallback *callback = [arguments objectAtIndex:1];
+  __weak __typeof__(self) weakSelf = self;
+
+  [_reference removeValueWithCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull ref) {
+    __typeof__(self) strongSelf = weakSelf;
+    NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObjectsAndKeys:NUMBOOL(error == nil), @"success", nil];
+
+    [callback call:@[ event ] thisObject:strongSelf];
+  }];
 }
 
-- (void)updateChildValues:(id)childValues
+- (void)updateChildValues:(NSArray *)arguments
 {
-  ENSURE_SINGLE_ARG(childValues, NSDictionary);
-  [_reference updateChildValues:childValues];
+  NSDictionary *childValues = [arguments objectAtIndex:0];
+
+  if ([arguments count] == 1) {
+    [_reference updateChildValues:childValues];
+    return;
+  }
+
+  KrollCallback *callback = [arguments objectAtIndex:1];
+  __weak __typeof__(self) weakSelf = self;
+
+  [_reference updateChildValues:childValues
+            withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull ref) {
+              __typeof__(self) strongSelf = weakSelf;
+              NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObjectsAndKeys:NUMBOOL(error == nil), @"success", nil];
+
+              [callback call:@[ event ] thisObject:strongSelf];
+            }];
 }
 
-- (void)setPriority:(NSNumber *)priority
+- (void)setPriority:(NSArray *)arguments
 {
-  [_reference setPriority:priority];
+  id priority = [arguments objectAtIndex:0];
+
+  if ([arguments count] == 0) {
+    [_reference setPriority:priority];
+    return;
+  }
+
+  KrollCallback *callback = [arguments objectAtIndex:1];
+  __weak __typeof__(self) weakSelf = self;
+
+  [_reference setPriority:priority
+      withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull ref) {
+        __typeof__(self) strongSelf = weakSelf;
+        NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObjectsAndKeys:NUMBOOL(error == nil), @"success", nil];
+
+        [callback call:@[ event ] thisObject:strongSelf];
+      }];
 }
+
+- (void)goOnline:(id)unused
+{
+  [FIRDatabaseReference goOnline];
+}
+
+- (void)goOffline:(id)unused
+{
+  [FIRDatabaseReference goOffline];
+}
+
+- (void)keepSynced:(NSNumber *)synced
+{
+  [_reference keepSynced:[TiUtils boolValue:synced]];
+}
+
+#pragma mark Properties
+
+- (NSString *)key
+{
+  return _reference.key;
+}
+
+- (NSString *)url
+{
+  return _reference.URL;
+}
+
+- (FirebaseDatabaseReferenceProxy *)parent
+{
+  return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext andDatabaseReference:_reference.parent observableEvents:nil];
+}
+
+- (FirebaseDatabaseReferenceProxy *)root
+{
+  return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext andDatabaseReference:_reference.root observableEvents:nil];
+}
+
+#pragma mark - Utilities
 
 - (void)_sendEvent:(NSDictionary *)event forEventType:(FIRDataEventType)eventType
 {

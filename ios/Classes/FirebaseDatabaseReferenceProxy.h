@@ -17,12 +17,26 @@
 
 - (FirebaseDatabaseReferenceProxy *)child:(id)arguments;
 
-- (void)setValue:(id)value;
+- (void)setValue:(NSArray *)arguments;
 
-- (void)removeValue:(id)unused;
+- (void)removeValue:(NSArray *)arguments;
 
-- (void)updateChildValues:(id)childValues;
+- (void)updateChildValues:(NSArray *)childValues;
 
-- (void)setPriority:(NSNumber *)priority;
+- (void)setPriority:(NSArray *)arguments;
+
+- (void)goOnline:(__unused id)unused;
+
+- (void)goOffline:(__unused id)unused;
+
+- (void)keepSynced:(NSNumber *)synced;
+
+- (NSString *)key;
+
+- (NSString *)url;
+
+- (FirebaseDatabaseReferenceProxy *)parent;
+
+- (FirebaseDatabaseReferenceProxy *)root;
 
 @end
