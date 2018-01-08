@@ -10,20 +10,20 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 
 #### Methods
 
-- `getReference(arguments)` -> `FirebaseDatabaseReference`
-  - `identifier` (String), `path` (String) **OR** `url` (String)
-  - `observableEvents` ([`DATA_EVENT_TYPE_*`])
+* `getReference(arguments)` -> `FirebaseDatabaseReference`
+    * `identifier` (String), `path` (String) **OR** `url` (String)
+    * `observableEvents` ([`DATA_EVENT_TYPE_*`])
 
 ### `FirebaseDatabaseReference`
 
 #### Methods
 
-- `child(arguments)` -> `FirebaseDatabaseReference`
-  - `identifier` (String), `path` (String) **OR** `url` (String)
-  - `observableEvents` ([`DATA_EVENT_TYPE_*`])
+* `child(arguments)` -> `FirebaseDatabaseReference`
+    * `identifier` (String), `path` (String) **OR** `url` (String)
+    * `observableEvents` ([`DATA_EVENT_TYPE_*`])
 
-- `root(arguments)` -> `FirebaseDatabaseReference`
-  - `observableEvents` ([`DATA_EVENT_TYPE_*`])
+* `root(arguments)` -> `FirebaseDatabaseReference`
+    * `observableEvents` ([`DATA_EVENT_TYPE_*`])
   
 - `parent(arguments)` -> `FirebaseDatabaseReference`
   - `observableEvents` ([`DATA_EVENT_TYPE_*`])
