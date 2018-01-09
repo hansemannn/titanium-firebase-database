@@ -17,6 +17,10 @@
 
 - (FirebaseDatabaseReferenceProxy *)child:(id)arguments;
 
+- (FirebaseDatabaseReferenceProxy *)parent:(id)arguments;
+
+- (FirebaseDatabaseReferenceProxy *)root:(id)arguments;
+
 - (void)setValue:(NSArray *)arguments;
 
 - (void)removeValue:(NSArray *)arguments;
@@ -34,9 +38,5 @@
 - (NSString *)key;
 
 - (NSString *)url;
-
-- (FirebaseDatabaseReferenceProxy *)parent;
-
-- (FirebaseDatabaseReferenceProxy *)root;
 
 @end

@@ -41,13 +41,9 @@
 
   if (identifier != nil) {
     reference = [[[FIRDatabase database] reference] child:identifier];
-  }
-
-  if (path != nil) {
+  } else if (path != nil) {
     reference = [[FIRDatabase database] referenceWithPath:path];
-  }
-
-  if (url != nil) {
+  } else if (url != nil) {
     reference = [[FIRDatabase database] referenceFromURL:url];
   }
 

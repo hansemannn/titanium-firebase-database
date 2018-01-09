@@ -8,6 +8,12 @@
 #import "FirebaseDatabaseReferenceProxy.h"
 #import "TiUtils.h"
 
+typedef NS_ENUM(NSUInteger, TiReferenceType) {
+  TiReferenceTypeChild = 0,
+  TiReferenceTypeRoot,
+  TiReferenceTypeParent
+};
+
 @implementation FirebaseDatabaseReferenceProxy
 
 #pragma mark - Internal
@@ -44,31 +50,32 @@
 {
   ENSURE_SINGLE_ARG(arguments, NSDictionary);
 
-  NSString *identifier = [arguments objectForKey:@"identifier"];
-  NSString *path = [arguments objectForKey:@"path"];
-  NSString *url = [arguments objectForKey:@"url"];
   NSArray *observableEvents = [arguments objectForKey:@"observableEvents"];
 
-  FIRDatabaseReference *reference = nil;
-
-  if (identifier != nil) {
-    reference = [[[FIRDatabase database] reference] child:identifier];
-  }
-
-  if (path != nil) {
-    reference = [[FIRDatabase database] referenceWithPath:path];
-  }
-
-  if (url != nil) {
-    reference = [[FIRDatabase database] referenceFromURL:url];
-  }
-
-  if (reference == nil) {
-    [self throwException:@"Cannot construct database reference" subreason:@"No valid key (identifier, path or url) found" location:CODELOCATION];
-  }
-
   return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext
-                                                 andDatabaseReference:reference
+                                                 andDatabaseReference:[self _referenceFromArguments:arguments andType:TiReferenceTypeChild]
+                                                     observableEvents:observableEvents];
+}
+
+- (FirebaseDatabaseReferenceProxy *)parent:(id)arguments
+{
+  ENSURE_SINGLE_ARG(arguments, NSDictionary);
+  
+  NSArray *observableEvents = [arguments objectForKey:@"observableEvents"];
+  
+  return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext
+                                                 andDatabaseReference:[self _referenceFromArguments:arguments andType:TiReferenceTypeParent]
+                                                     observableEvents:observableEvents];
+}
+
+- (FirebaseDatabaseReferenceProxy *)root:(id)arguments
+{
+  ENSURE_SINGLE_ARG(arguments, NSDictionary);
+  
+  NSArray *observableEvents = [arguments objectForKey:@"observableEvents"];
+  
+  return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext
+                                                 andDatabaseReference:[self _referenceFromArguments:arguments andType:TiReferenceTypeRoot]
                                                      observableEvents:observableEvents];
 }
 
@@ -182,17 +189,40 @@
   return _reference.URL;
 }
 
-- (FirebaseDatabaseReferenceProxy *)parent
-{
-  return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext andDatabaseReference:_reference.parent observableEvents:nil];
-}
-
-- (FirebaseDatabaseReferenceProxy *)root
-{
-  return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext andDatabaseReference:_reference.root observableEvents:nil];
-}
-
 #pragma mark - Utilities
+
+- (FIRDatabaseReference *)_referenceFromArguments:(NSDictionary *)arguments andType:(TiReferenceType)type
+{
+  if (type == TiReferenceTypeRoot) {
+    return [_reference root];
+  }
+  
+  if (type == TiReferenceTypeParent) {
+    return [_reference parent];
+  }
+  
+  NSString *identifier = [arguments objectForKey:@"identifier"];
+  NSString *path = [arguments objectForKey:@"path"];
+  NSString *url = [arguments objectForKey:@"url"];
+  
+  FIRDatabaseReference *reference = nil;
+  
+  if (identifier != nil) {
+    return [[[FIRDatabase database] reference] child:identifier];
+  }
+  
+  if (path != nil) {
+    return [[FIRDatabase database] referenceWithPath:path];
+  }
+  
+  if (url != nil) {
+    return [[FIRDatabase database] referenceFromURL:url];
+  }
+  
+  [self throwException:@"Cannot construct database reference"
+             subreason:@"No valid key (identifier, path or url) found"
+              location:CODELOCATION];
+}
 
 - (void)_sendEvent:(NSDictionary *)event forEventType:(FIRDataEventType)eventType
 {
@@ -216,5 +246,11 @@
 
   [self fireEvent:identifier withObject:event];
 }
+
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_VALUE, FIRDataEventTypeChildAdded);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_ADD, FIRDataEventTypeChildAdded);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_REMOVE, FIRDataEventTypeChildRemoved);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_MOVE, FIRDataEventTypeChildMoved);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_CHANGE, FIRDataEventTypeChildChanged);
 
 @end
