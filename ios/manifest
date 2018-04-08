@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.0
+version: 1.1.0
 apiversion: 2
 architectures: armv7 arm64 i386 x86_64
 description: titanium-firebase-database
@@ -15,4 +15,4 @@ name: titanium-firebase-database
 moduleid: firebase.database
 guid: 70e51a34-9140-4f84-bc9b-59960d99fbf8
 platform: iphone
-minsdk: 6.2.0
+minsdk: 6.3.0.GA
