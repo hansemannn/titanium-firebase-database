@@ -16,6 +16,12 @@
 
 #pragma mark Internal
 
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_VALUE, FIRDataEventTypeValue);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_ADD, FIRDataEventTypeChildAdded);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_REMOVE, FIRDataEventTypeChildRemoved);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_MOVE, FIRDataEventTypeChildMoved);
+MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_CHANGE, FIRDataEventTypeChildChanged);
+
 - (id)moduleGUID
 {
   return @"70e51a34-9140-4f84-bc9b-59960d99fbf8";

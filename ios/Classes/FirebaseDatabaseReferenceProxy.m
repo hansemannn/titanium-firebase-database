@@ -60,9 +60,9 @@ typedef NS_ENUM(NSUInteger, TiReferenceType) {
 - (FirebaseDatabaseReferenceProxy *)parent:(id)arguments
 {
   ENSURE_SINGLE_ARG(arguments, NSDictionary);
-  
+
   NSArray *observableEvents = [arguments objectForKey:@"observableEvents"];
-  
+
   return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext
                                                  andDatabaseReference:[self _referenceFromArguments:arguments andType:TiReferenceTypeParent]
                                                      observableEvents:observableEvents];
@@ -71,9 +71,9 @@ typedef NS_ENUM(NSUInteger, TiReferenceType) {
 - (FirebaseDatabaseReferenceProxy *)root:(id)arguments
 {
   ENSURE_SINGLE_ARG(arguments, NSDictionary);
-  
+
   NSArray *observableEvents = [arguments objectForKey:@"observableEvents"];
-  
+
   return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext
                                                  andDatabaseReference:[self _referenceFromArguments:arguments andType:TiReferenceTypeRoot]
                                                      observableEvents:observableEvents];
@@ -196,29 +196,29 @@ typedef NS_ENUM(NSUInteger, TiReferenceType) {
   if (type == TiReferenceTypeRoot) {
     return [_reference root];
   }
-  
+
   if (type == TiReferenceTypeParent) {
     return [_reference parent];
   }
-  
+
   NSString *identifier = [arguments objectForKey:@"identifier"];
   NSString *path = [arguments objectForKey:@"path"];
   NSString *url = [arguments objectForKey:@"url"];
-  
+
   FIRDatabaseReference *reference = nil;
-  
+
   if (identifier != nil) {
     return [[[FIRDatabase database] reference] child:identifier];
   }
-  
+
   if (path != nil) {
     return [[FIRDatabase database] referenceWithPath:path];
   }
-  
+
   if (url != nil) {
     return [[FIRDatabase database] referenceFromURL:url];
   }
-  
+
   [self throwException:@"Cannot construct database reference"
              subreason:@"No valid key (identifier, path or url) found"
               location:CODELOCATION];
@@ -246,11 +246,5 @@ typedef NS_ENUM(NSUInteger, TiReferenceType) {
 
   [self fireEvent:identifier withObject:event];
 }
-
-MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_VALUE, FIRDataEventTypeChildAdded);
-MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_ADD, FIRDataEventTypeChildAdded);
-MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_REMOVE, FIRDataEventTypeChildRemoved);
-MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_MOVE, FIRDataEventTypeChildMoved);
-MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_CHANGE, FIRDataEventTypeChildChanged);
 
 @end
