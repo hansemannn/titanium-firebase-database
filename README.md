@@ -29,7 +29,7 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 
 - `root(arguments)` -> `FirebaseDatabaseReference`
   - `observableEvents` ([`DATA_EVENT_TYPE_*`])
-  
+
 - `parent(arguments)` -> `FirebaseDatabaseReference`
   - `observableEvents` ([`DATA_EVENT_TYPE_*`])
 
@@ -39,7 +39,7 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 
 - `removeValue(callback)`
   - `callback` (optional, Function)
-  
+
 - `updateChildValues(childValues, callback)`
   - `childValues` (Dictionary)
   - `callback` (optional, Function)
@@ -64,10 +64,10 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 #### Constants
 
 - `DATA_EVENT_TYPE_VALUE`
-- `DATA_EVENT_TYPE_ADD`
-- `DATA_EVENT_TYPE_CHANGE`
-- `DATA_EVENT_TYPE_MOVE`
-- `DATA_EVENT_TYPE_REMOVE`
+- `DATA_EVENT_TYPE_CHILD_ADDED`
+- `DATA_EVENT_TYPE_CHILD_CHANGED`
+- `DATA_EVENT_TYPE_CHILD_MOVED`
+- `DATA_EVENT_TYPE_CHILD_REMOVED`
 
 ## Events
 
@@ -75,10 +75,10 @@ Important note: Events are added and removed generically. They are only fired if
 the `observableEvents` parameter.
 
 - `value` (via `DATA_EVENT_TYPE_VALUE`)
-- `add` (via `DATA_EVENT_TYPE_ADD`)
-- `change` (via `DATA_EVENT_TYPE_CHANGE`)
-- `move` (via `DATA_EVENT_TYPE_MOVE`)
-- `remove` (via `DATA_EVENT_TYPE_REMOVE`)
+- `add` (via `DATA_EVENT_TYPE_CHILD_ADDED`)
+- `change` (via `DATA_EVENT_TYPE_CHILD_CHANGED`)
+- `move` (via `DATA_EVENT_TYPE_CHILD_MOVED`)
+- `remove` (via `DATA_EVENT_TYPE_CHILD_REMOVED`)
 
 ## Example
 ```js
