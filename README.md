@@ -64,10 +64,10 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 #### Constants
 
 - `DATA_EVENT_TYPE_VALUE`
-- `DATA_EVENT_TYPE_CHILD_ADD`
-- `DATA_EVENT_TYPE_CHILD_CHANGE`
-- `DATA_EVENT_TYPE_CHILD_MOVE`
-- `DATA_EVENT_TYPE_CHILD_REMOVE`
+- `DATA_EVENT_TYPE_CHILD_ADDED`
+- `DATA_EVENT_TYPE_CHILD_CHANGED`
+- `DATA_EVENT_TYPE_CHILD_MOVED`
+- `DATA_EVENT_TYPE_CHILD_REMOVED`
 
 ## Events
 
@@ -75,10 +75,10 @@ Important note: Events are added and removed generically. They are only fired if
 the `observableEvents` parameter.
 
 - `value` (via `DATA_EVENT_TYPE_VALUE`)
-- `add` (via `DATA_EVENT_TYPE_CHILD_ADD`)
-- `change` (via `DATA_EVENT_TYPE_CHILD_CHANGE`)
-- `move` (via `DATA_EVENT_TYPE_CHILD_MOVE`)
-- `remove` (via `DATA_EVENT_TYPE_CHILD_REMOVE`)
+- `add` (via `DATA_EVENT_TYPE_CHILD_ADDED`)
+- `change` (via `DATA_EVENT_TYPE_CHILD_CHANGED`)
+- `move` (via `DATA_EVENT_TYPE_CHILD_MOVED`)
+- `remove` (via `DATA_EVENT_TYPE_CHILD_REMOVED`)
 
 ## Example
 ```js
