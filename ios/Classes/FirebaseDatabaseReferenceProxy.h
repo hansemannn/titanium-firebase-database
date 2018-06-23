@@ -17,6 +17,8 @@
 
 - (FirebaseDatabaseReferenceProxy *)child:(id)arguments;
 
+- (FirebaseDatabaseReferenceProxy *)childByAutoId:(id)arguments;
+
 - (FirebaseDatabaseReferenceProxy *)parent:(id)arguments;
 
 - (FirebaseDatabaseReferenceProxy *)root:(id)arguments;

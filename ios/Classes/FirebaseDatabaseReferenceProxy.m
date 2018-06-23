@@ -57,6 +57,19 @@ typedef NS_ENUM(NSUInteger, TiReferenceType) {
                                                      observableEvents:observableEvents];
 }
 
+
+- (FirebaseDatabaseReferenceProxy *)childByAutoId:(id)arguments
+{
+    ENSURE_SINGLE_ARG(arguments, NSDictionary);
+    
+    NSArray *observableEvents = [arguments objectForKey:@"observableEvents"];
+    
+    return [[FirebaseDatabaseReferenceProxy alloc] _initWithPageContext:self.pageContext
+                                                   andDatabaseReference:[[self _referenceFromArguments:arguments andType:TiReferenceTypeChild] childByAutoId]
+                                                       observableEvents:observableEvents];
+}
+
+
 - (FirebaseDatabaseReferenceProxy *)parent:(id)arguments
 {
   ENSURE_SINGLE_ARG(arguments, NSDictionary);

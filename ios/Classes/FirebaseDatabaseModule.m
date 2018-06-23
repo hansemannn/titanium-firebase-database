@@ -62,4 +62,8 @@ MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_CHILD_CHANGED, FIRDataEventTypeChildChanged);
                                                      observableEvents:observableEvents];
 }
 
+-(NSDictionary*)getFirebaseServerTimestamp:(id)unused{
+    return [FIRServerValue timestamp];
+}
+
 @end
