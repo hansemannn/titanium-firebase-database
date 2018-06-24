@@ -12,5 +12,6 @@
 }
 
 - (FirebaseDatabaseReferenceProxy *)getReference:(id)arguments;
--(NSDictionary*)getFirebaseServerTimestamp:(id)unused;
+- (NSDictionary *)firebaseServerTimestamp;
+
 @end
