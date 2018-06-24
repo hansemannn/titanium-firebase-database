@@ -9,7 +9,7 @@ Use the native Firebase SDK in Axway Titanium. This repository is part of the [T
 
 ## ToDo's
 
--   [ ] Property format nested lists in this ReadMe
+-   [ ] Property format nested lists in this Readme
 
 ## API's
 
@@ -98,44 +98,44 @@ the `observableEvents` parameter.
 // Require the Firebase Database module
 var FirebaseDatabase = require('firebase.database');
 
-//Inserting values in firebase database
+// Inserting values in firebase database
 var fdRef = FirebaseDatabase.getReference().childByAutoId({
-		path : "user" ,
-	});
+	path: 'user'
+});
 
-	fdRef.setValue({
-		username : "username",
-		email : "test@gmailcom",
-		password : "ABCXYZ",
-		timestamp : FirebaseDatabase.getFirebaseServerTimestamp()
-	}, function(e) {
-		Ti.API.info("Value write callback, Data Snapshot " + JSON.stringify(e));
-	});
+fdRef.setValue({
+	username: 'username',
+	email: 'test@example.com',
+	password: 'ABCXYZ',
+	timestamp: FirebaseDatabase.getFirebaseServerTimestamp()
+}, function(e) {
+	Ti.API.info('Value written, snapshot: ' + JSON.stringify(e, null, 4));
+});
 
-//Fetching values from firebase database
-
+// Fetching values from Firebase database
 
 var userRef = FirebaseDatabase.getReference({
-	path : "user",
-	observableEvents : [FirebaseDatabase.DATA_EVENT_TYPE_CHILD_ADDED, FirebaseDatabase.DATA_EVENT_TYPE_VALUE]
+	path: 'user',
+	observableEvents: [FirebaseDatabase.DATA_EVENT_TYPE_CHILD_ADDED, FirebaseDatabase.DATA_EVENT_TYPE_VALUE]
 });
 
-userRef.addEventListener("value", function(e) {
-	Ti.API.info("DATA_EVENT_TYPE_VALUE Data Snapshot " + JSON.stringify(e));
+userRef.addEventListener('value', function(e) {
+	Ti.API.info('DATA_EVENT_TYPE_VALUE, snapshot: ' + JSON.stringify(e, null, 4));
 });
-userRef.addEventListener("add", function(e) {
-	Ti.API.info("DATA_EVENT_TYPE_CHILD_ADDED Data Snapshot " + JSON.stringify(e));
+
+userRef.addEventListener('add', function(e) {
+	Ti.API.info('DATA_EVENT_TYPE_CHILD_ADDED, snapshot: ' + JSON.stringify(e, null, 4));
 });
 
 ```
 
--   [example](https://github.com/RavindraChherke/titanium-firebase-database/blob/new_functions/example/app.js)
+-   [Example](https://github.com/RavindraChherke/titanium-firebase-database/blob/new_functions/example/app.js)
 
 ## Build
 
 ```js
 cd ios
-appc ti build -p ios --build-only
+appc run -p ios --build-only
 ```
 
 ## Legal
