@@ -7,6 +7,10 @@
  */
 package firebase.database;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +44,42 @@ public class DatabaseReferenceProxy extends KrollProxy {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
+        ChildEventListener childListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                KrollDict kd = new KrollDict();
+                kd.put("data", snapshot.toString());
+                fireEvent("add", kd);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                KrollDict kd = new KrollDict();
+                kd.put("data", snapshot.toString());
+                fireEvent("change", kd);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                KrollDict kd = new KrollDict();
+                kd.put("data", snapshot.toString());
+                fireEvent("remove", kd);
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                KrollDict kd = new KrollDict();
+                kd.put("data", snapshot.toString());
+                fireEvent("move", kd);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
         databaseReference.addValueEventListener(postListener);
+        databaseReference.addChildEventListener(childListener);
     }
 
     // Handle creation options
@@ -53,6 +92,13 @@ public class DatabaseReferenceProxy extends KrollProxy {
         return databaseReference;
     }
 
+    @Kroll.method
+    public DatabaseReferenceProxy child(KrollDict kd) {
+        String path = kd.getString("path");
+        String identifier = kd.getString("identifier");
+        databaseReference = databaseReference.child(path).child(identifier);
+        return this;
+    }
 
     @Kroll.method
     public DatabaseReferenceProxy childByAutoId(KrollDict kd) {
@@ -69,6 +115,9 @@ public class DatabaseReferenceProxy extends KrollProxy {
     @Kroll.method
     public void removeValue() {
         databaseReference.removeValue();
+        KrollDict kd = new KrollDict();
+        kd.put("data", databaseReference.toString());
+        fireEvent("remove", kd);
     }
 
     @Kroll.method
