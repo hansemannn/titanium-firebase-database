@@ -27,10 +27,11 @@ import org.appcelerator.titanium.TiApplication;
 @Kroll.module(name = "FirebaseDatabase", id = "firebase.database")
 public class FirebaseDatabaseModule extends KrollModule {
 
+    @Kroll.constant
+    public static final int DATA_EVENT_TYPE_CHILD_ADDED = 0;
+    @Kroll.constant
+    public static final int DATA_EVENT_TYPE_VALUE = 1;
     FirebaseDatabase database;
-
-    @Kroll.constant public static final int DATA_EVENT_TYPE_CHILD_ADDED = 0;
-    @Kroll.constant public static final int DATA_EVENT_TYPE_VALUE = 1;
 
     // You can define constants with @Kroll.constant, for example:
     // @Kroll.constant public static final String EXTERNAL_NAME = value;
