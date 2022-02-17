@@ -7,12 +7,20 @@
  */
 package firebase.database;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.common.util.ArrayUtils;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.kroll.common.TiConfig;
 import org.appcelerator.titanium.TiApplication;
 
 
@@ -20,6 +28,9 @@ import org.appcelerator.titanium.TiApplication;
 public class FirebaseDatabaseModule extends KrollModule {
 
     FirebaseDatabase database;
+
+    @Kroll.constant public static final int DATA_EVENT_TYPE_CHILD_ADDED = 0;
+    @Kroll.constant public static final int DATA_EVENT_TYPE_VALUE = 1;
 
     // You can define constants with @Kroll.constant, for example:
     // @Kroll.constant public static final String EXTERNAL_NAME = value;
@@ -30,19 +41,84 @@ public class FirebaseDatabaseModule extends KrollModule {
 
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication app) {
+
     }
 
     @Kroll.method
     public DatabaseReferenceProxy getReference(@Kroll.argument(optional = true) KrollDict kd) {
         database = FirebaseDatabase.getInstance();
-        String path = "";
-        if (kd.containsKeyAndNotNull("path")) {
-            path = kd.getString("path");
+        DatabaseReference dbr;
+        if (kd != null) {
+            if (kd.containsKeyAndNotNull("path")) {
+                String path = kd.getString("path");
+                dbr = database.getReference(path);
+            } else {
+                dbr = database.getReference();
+            }
+
+            if (kd.containsKeyAndNotNull("observableEvents")) {
+                int[] intArray = kd.getIntArray("observableEvents");
+                if (ArrayUtils.contains(intArray, DATA_EVENT_TYPE_CHILD_ADDED)) {
+                    dbr.addChildEventListener(new ChildEventListener() {
+
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            KrollDict kd = new KrollDict();
+                            kd.put("data", snapshot.toString());
+                            fireEvent("add", kd);
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            KrollDict kd = new KrollDict();
+                            kd.put("data", snapshot.toString());
+                            fireEvent("change", kd);
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                            KrollDict kd = new KrollDict();
+                            kd.put("data", snapshot.toString());
+                            fireEvent("remove", kd);
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            KrollDict kd = new KrollDict();
+                            kd.put("data", snapshot.toString());
+                            fireEvent("move", kd);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                } else if (ArrayUtils.contains(intArray, DATA_EVENT_TYPE_VALUE)) {
+                    dbr.addValueEventListener(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            KrollDict kd = new KrollDict();
+                            kd.put("data", snapshot.toString());
+                            fireEvent("change", kd);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+        } else {
+            dbr = database.getReference();
         }
-        DatabaseReferenceProxy drp = new DatabaseReferenceProxy(database.getReference(path));
+        DatabaseReferenceProxy drp = new DatabaseReferenceProxy(dbr);
+
+
         return drp;
     }
-
 
     @Kroll.getProperty
     public Long getFirebaseServerTimestamp() {
@@ -50,4 +126,3 @@ public class FirebaseDatabaseModule extends KrollModule {
     }
 
 }
-

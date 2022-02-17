@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 @Kroll.proxy(creatableInModule = FirebaseDatabaseModule.class)
 public class DatabaseReferenceProxy extends KrollProxy {
-    private final DatabaseReference databaseReference;
+    private DatabaseReference databaseReference;
 
     // Constructor
     public DatabaseReferenceProxy(DatabaseReference dbr) {
@@ -55,8 +55,10 @@ public class DatabaseReferenceProxy extends KrollProxy {
 
 
     @Kroll.method
-    public void childByAutoId(String string) {
-        databaseReference.child(string);
+    public DatabaseReferenceProxy childByAutoId(KrollDict kd) {
+        String path = kd.getString("path");
+        databaseReference = databaseReference.child(path).push();
+        return this;
     }
 
     @Kroll.method
