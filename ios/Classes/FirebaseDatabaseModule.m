@@ -36,7 +36,11 @@ MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_CHILD_CHANGED, FIRDataEventTypeChildChanged);
 
 - (FirebaseDatabaseReferenceProxy *)getReference:(id)arguments
 {
-  ENSURE_SINGLE_ARG(arguments, NSDictionary);
+  ENSURE_SINGLE_ARG_OR_NIL(arguments, NSDictionary);
+
+  if (arguments == nil) {
+    arguments = [NSDictionary dictionary];
+  }
 
   NSString *identifier = [arguments objectForKey:@"identifier"];
   NSString *path = [arguments objectForKey:@"path"];
@@ -51,6 +55,8 @@ MAKE_SYSTEM_PROP(DATA_EVENT_TYPE_CHILD_CHANGED, FIRDataEventTypeChildChanged);
     reference = [[FIRDatabase database] referenceWithPath:path];
   } else if (url != nil) {
     reference = [[FIRDatabase database] referenceFromURL:url];
+  } else {
+    reference = [[FIRDatabase database] reference];
   }
 
   if (reference == nil) {
