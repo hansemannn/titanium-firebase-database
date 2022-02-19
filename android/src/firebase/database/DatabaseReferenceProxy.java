@@ -10,6 +10,8 @@ package firebase.database;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 
@@ -95,21 +98,43 @@ public class DatabaseReferenceProxy extends KrollProxy {
     @Kroll.method
     public DatabaseReferenceProxy child(KrollDict kd) {
         String path = kd.getString("path");
+        String url = kd.getString("url");
         String identifier = kd.getString("identifier");
-        databaseReference = databaseReference.child(path).child(identifier);
+        if (path != "" && identifier != "") {
+            databaseReference = databaseReference.child(path).child(identifier);
+        } else if (url != "" && identifier != "") {
+            databaseReference = databaseReference.getDatabase().getReferenceFromUrl(url).child(identifier);
+        }
         return this;
     }
 
     @Kroll.method
     public DatabaseReferenceProxy childByAutoId(KrollDict kd) {
         String path = kd.getString("path");
-        databaseReference = databaseReference.child(path).push();
+        if (path != "") {
+            databaseReference = databaseReference.child(path).push();
+        }
         return this;
     }
 
     @Kroll.method
     public void setValue(HashMap data) {
         databaseReference.setValue(data);
+    }
+
+    @Kroll.method
+    public void setValue(HashMap data, KrollFunction callback) {
+        databaseReference.setValue(data);
+        if (callback != null) {
+            databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("data", task.getResult().toString());
+                    callback.call(getKrollObject(), kd);
+                }
+            });
+        }
     }
 
     @Kroll.method
@@ -121,8 +146,30 @@ public class DatabaseReferenceProxy extends KrollProxy {
     }
 
     @Kroll.method
+    public void updateChildValues(HashMap data) {
+        databaseReference.updateChildren(data);
+    }
+
+    @Kroll.method
     public void goOnline() {
         databaseReference.getDatabase().goOnline();
+    }
+
+    @Kroll.method
+    public void keepSynced(Boolean value) {
+        databaseReference.keepSynced(value);
+    }
+
+    @Kroll.method
+    public void setPriority(Object priority, KrollFunction callback) {
+        databaseReference.setPriority(priority, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                if (callback != null) {
+                    callback.call(getKrollObject(), new KrollDict());
+                }
+            }
+        });
     }
 
     @Kroll.method

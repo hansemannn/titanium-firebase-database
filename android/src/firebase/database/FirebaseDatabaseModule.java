@@ -53,6 +53,9 @@ public class FirebaseDatabaseModule extends KrollModule {
             if (kd.containsKeyAndNotNull("path")) {
                 String path = kd.getString("path");
                 dbr = database.getReference(path);
+            } else if (kd.containsKeyAndNotNull("url")) {
+                String url = kd.getString("url");
+                dbr = database.getReferenceFromUrl(url);
             } else {
                 dbr = database.getReference();
             }
