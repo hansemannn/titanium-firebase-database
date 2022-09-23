@@ -16,6 +16,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.appcelerator.kroll.KrollDict;
@@ -28,11 +29,13 @@ import java.util.HashMap;
 @Kroll.proxy(creatableInModule = FirebaseDatabaseModule.class)
 public class DatabaseReferenceProxy extends KrollProxy {
     private DatabaseReference databaseReference;
+    private final FirebaseDatabase database;
 
     // Constructor
-    public DatabaseReferenceProxy(DatabaseReference dbr) {
+    public DatabaseReferenceProxy(DatabaseReference dbr, FirebaseDatabase db) {
         super();
         databaseReference = dbr;
+        database = db;
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -45,6 +48,10 @@ public class DatabaseReferenceProxy extends KrollProxy {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                KrollDict kd = new KrollDict();
+                kd.put("type", "error");
+                kd.put("message", databaseError.getMessage());
+                fireEvent("error", kd);
             }
         };
         ChildEventListener childListener = new ChildEventListener() {
@@ -78,7 +85,10 @@ public class DatabaseReferenceProxy extends KrollProxy {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                KrollDict kd = new KrollDict();
+                kd.put("type", "cancelled");
+                kd.put("message", error.getMessage());
+                fireEvent("error", kd);
             }
         };
         databaseReference.addValueEventListener(postListener);
@@ -101,9 +111,9 @@ public class DatabaseReferenceProxy extends KrollProxy {
         String url = kd.getString("url");
         String identifier = kd.getString("identifier");
         if (path != "" && identifier != "") {
-            databaseReference = databaseReference.child(path).child(identifier);
+            databaseReference = database.getReference(path).child(identifier);
         } else if (url != "" && identifier != "") {
-            databaseReference = databaseReference.getDatabase().getReferenceFromUrl(url).child(identifier);
+            databaseReference = database.getReferenceFromUrl(url).child(identifier);
         }
         return this;
     }
@@ -112,7 +122,7 @@ public class DatabaseReferenceProxy extends KrollProxy {
     public DatabaseReferenceProxy childByAutoId(KrollDict kd) {
         String path = kd.getString("path");
         if (path != "") {
-            databaseReference = databaseReference.child(path).push();
+            databaseReference = database.getReference(path).push();
         }
         return this;
     }
@@ -152,7 +162,7 @@ public class DatabaseReferenceProxy extends KrollProxy {
 
     @Kroll.method
     public void goOnline() {
-        databaseReference.getDatabase().goOnline();
+        database.goOnline();
     }
 
     @Kroll.method
@@ -174,7 +184,7 @@ public class DatabaseReferenceProxy extends KrollProxy {
 
     @Kroll.method
     public void goOffline() {
-        databaseReference.getDatabase().goOffline();
+        database.goOffline();
     }
 
 }

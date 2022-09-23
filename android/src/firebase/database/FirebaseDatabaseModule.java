@@ -118,7 +118,7 @@ public class FirebaseDatabaseModule extends KrollModule {
         } else {
             dbr = database.getReference();
         }
-        DatabaseReferenceProxy drp = new DatabaseReferenceProxy(dbr);
+        DatabaseReferenceProxy drp = new DatabaseReferenceProxy(dbr, database);
 
 
         return drp;
