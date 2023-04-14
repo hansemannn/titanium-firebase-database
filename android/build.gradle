@@ -1,0 +1,7 @@
+
+dependencies {
+	implementation 'com.google.firebase:firebase-database:20.2.0'
+	implementation 'com.google.firebase:firebase-database-ktx:20.2.0'
+	implementation 'com.google.firebase:firebase-firestore:24.5.0'
+	implementation 'com.google.firebase:firebase-firestore-ktx:24.5.0'
+}

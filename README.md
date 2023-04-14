@@ -27,7 +27,9 @@ thank you!
       \- `identifier` (String), `path` (String) **OR** `url` (String)
       \- `observableEvents` ([`DATA_EVENT_TYPE_*`])
 
--   `getFirebaseServerTimestamp()`
+#### Properties
+
+-   `firebaseServerTimestamp`
 
 ### `FirebaseDatabaseReference`
 
@@ -101,19 +103,50 @@ the `observableEvents` parameter.
 ## Example
 
 ```js
-// Require the Firebase Database module
-var FirebaseDatabase = require('firebase.database');
+const win = Ti.UI.createWindow({layout:'vertical', title:'Firebase Database'});
+const btn1 = Ti.UI.createButton({title:'add random item'});
+const btn2 = Ti.UI.createButton({title:'delete last item'});
+win.add([btn1, btn2])
 
-// Inserting values in firebase database
-var fdRef = FirebaseDatabase.getReference().childByAutoId({
-	path: 'user'
+// Require the Firebase Database module
+const FirebaseDatabase = require('firebase.database');
+var randomReference = null;
+
+btn1.addEventListener('click', function(){
+	// Inserting values in firebase database
+	randomReference = FirebaseDatabase.getReference().childByAutoId({
+		path: 'user'
+	});
+
+	randomReference.setValue({
+		username: 'username',
+		email: 'test@example.com',
+		password: 'ABCXYZ',
+		timestamp: FirebaseDatabase.firebaseServerTimestamp
+	}, function(e) {
+		Ti.API.info('Value written, snapshot: ' + JSON.stringify(e, null, 4));
+	});
+})
+
+btn2.addEventListener('click', function(){
+	if (randomReference) {
+		// remove last random item
+		randomReference.removeValue();
+		randomReference = null;
+	}
+});
+
+// insert fixed item
+var fdRef = FirebaseDatabase.getReference().child({
+	path: 'user',
+	identifier: 'user1'
 });
 
 fdRef.setValue({
-	username: 'username',
-	email: 'test@example.com',
-	password: 'ABCXYZ',
-	timestamp: FirebaseDatabase.getFirebaseServerTimestamp()
+	username: 'fixed username',
+	email: 'fixed@example.com',
+	password: 'ABCXYZ_fixed',
+	timestamp: FirebaseDatabase.firebaseServerTimestamp
 }, function(e) {
 	Ti.API.info('Value written, snapshot: ' + JSON.stringify(e, null, 4));
 });
@@ -126,13 +159,18 @@ var userRef = FirebaseDatabase.getReference({
 });
 
 userRef.addEventListener('value', function(e) {
-	Ti.API.info('DATA_EVENT_TYPE_VALUE, snapshot: ' + JSON.stringify(e, null, 4));
+	Ti.API.info('DATA_EVENT_TYPE_VALUE, snapshot: ' + JSON.stringify(e));
 });
 
 userRef.addEventListener('add', function(e) {
-	Ti.API.info('DATA_EVENT_TYPE_CHILD_ADDED, snapshot: ' + JSON.stringify(e, null, 4));
+	Ti.API.info('DATA_EVENT_TYPE_CHILD_ADDED, snapshot: ' + JSON.stringify(e));
 });
 
+userRef.addEventListener('remove', function(e) {
+	Ti.API.info('removed value' + JSON.stringify(e));
+});
+
+win.open();
 ```
 
 -   [Example](https://github.com/RavindraChherke/titanium-firebase-database/blob/new_functions/example/app.js)
