@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.common.util.ArrayUtils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +86,20 @@ public class FirebaseDatabaseModule extends KrollModule {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
             });
+            /*dr.addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+                String source = value != null && value.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (value != null && value.exists()) {
+                    Log.i(TAG, source + " data: " + value.getData());
+                } else {
+                    Log.i(TAG, source + " data: null");
+                }
+            });*/
         } else {
             cr.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -106,6 +123,63 @@ public class FirebaseDatabaseModule extends KrollModule {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
             });
+        }
+    }
+
+    @Kroll.method
+    public void updateFirestore(KrollDict kd) {
+        databaseFirestore = FirebaseFirestore.getInstance();
+        String col = kd.getString("collection");
+        String doc = kd.getString("document");
+
+        if (!col.isEmpty() && !doc.isEmpty()) {
+            Map<String, Object> dataMap = new HashMap<>();
+            KrollDict data = kd.getKrollDict("data");
+            for (Map.Entry<String, Object> entry : data.entrySet()) {
+                dataMap.put(entry.getKey(), entry.getValue());
+            }
+
+            databaseFirestore.collection(col).document(doc)
+                    .set(dataMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully written!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+        } else {
+            Log.w(TAG, "Please set 'collection' and 'document'");
+        }
+    }
+
+    @Kroll.method
+    public void deleteFirestore(KrollDict kd) {
+        databaseFirestore = FirebaseFirestore.getInstance();
+        String col = kd.getString("collection");
+        String doc = kd.getString("document");
+        if (!col.isEmpty() && !doc.isEmpty()) {
+            databaseFirestore.collection(col).document(doc)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error deleting document", e);
+                        }
+                    });
+        } else {
+            Log.w(TAG, "Please set 'collection' and 'document'");
         }
     }
 
